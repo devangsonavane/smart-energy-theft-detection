@@ -1,114 +1,144 @@
-# Smart Energy Theft Detection System
+# ⚡ Smart Energy Theft Detection using Machine Learning
 
-A Python-based implementation of an unsupervised anomaly detection system for detecting potential energy theft in smart meter data.
+This project leverages machine learning to detect electricity theft using smart meter data. It involves preprocessing datasets, training a Random Forest model, evaluating its performance, and detecting anomalies. A simple Streamlit UI allows users to interact with the system for theft prediction.
 
-## Overview
+---
 
-This system detects irregular electricity usage patterns (Non-Technical Losses or theft) using unsupervised anomaly detection techniques. Rather than classifying usage as "theft" or "normal" with labeled data, the system learns what "normal" consumption looks like and then flags deviations.
+## 📁 Project Structure
 
-The architecture is modular and implements the full pipeline from data ingestion and preprocessing through model training and visualization.
 
-## Features
+SMART-ENERGY-THEFT-DETECTION/
+│
+├── data/                      # Contains input CSV datasets
+│   ├── smart\_meter\_data.csv
+│   ├── X\_train.csv, y\_train.csv
+│   ├── X\_test.csv, y\_test.csv
+│
+├── models/                   # Trained model file
+│   └── random\_forest\_model.pkl
+│
+├── notebooks/                # Jupyter Notebook for EDA
+│   └── eda.ipynb
+│
+├── src/                      # Source code files
+│   ├── detect\_anomalies.py       # Anomaly detection logic
+│   ├── evaluate\_model.py         # Model performance metrics
+│   ├── preprocess.py             # Data cleaning & feature engineering
+│   ├── train\_model.py            # Model training script
+│   ├── tempCodeRunnerFile.py     # (Ignore: VSCode temp file)
+│
+├── steamlit.py               # Streamlit UI for user interaction
+│
+├── Architecture.md           # System architecture overview
+├── README.md                 # Project documentation
+├── requirements.txt          # Python dependencies
 
-- **Data Pipeline**: Handles data ingestion, cleaning, resampling, and normalization of smart meter data.
-- **Unsupervised Anomaly Detection**: Implements two anomaly detection models:
-  - **Isolation Forest**: A tree-based ensemble model that isolates anomalies.
-  - **Autoencoder**: A neural network-based model that learns to reconstruct normal patterns.
-- **Evaluation**: Comprehensive evaluation metrics including ROC-AUC, Precision-Recall curves, and F1-score when labels are available.
-- **Visualization**: Graphical visualization of consumption patterns, anomaly scores, and detected anomalies.
-- **Analysis Tools**: Pattern mining and feature importance analysis to understand energy theft behaviors.
-- **Interactive Dashboard**: Optional interactive dashboard for exploring results (requires Dash and Plotly).
 
-## Requirements
+---
 
-- Python 3.7+
-- pandas
-- numpy
-- scikit-learn
-- tensorflow
-- matplotlib
-- seaborn
+## ⚙️ How It Works
 
-Optional:
-- dash
-- plotly
+1. **Data Preprocessing** (`preprocess.py`)
+   - Cleans the raw smart meter data
+   - Handles missing values and feature scaling
+   - Splits data into train/test sets
 
-## Installation
+2. **Model Training** (`train_model.py`)
+   - Trains a `RandomForestClassifier` on labeled data
+   - Saves the trained model to `models/random_forest_model.pkl`
 
-```bash
-# Clone the repository
+3. **Model Evaluation** (`evaluate_model.py`)
+   - Calculates accuracy, precision, recall, F1-score
+   - Confusion matrix and other classification metrics
+
+4. **Anomaly Detection** (`detect_anomalies.py`)
+   - Uses trained model to detect energy theft
+   - Returns whether a user is “Normal” or “Suspected Theft”
+
+5. **Visualization and Insights** (`notebooks/eda.ipynb`)
+   - Exploratory data analysis with graphs and plots
+
+6. **Web Interface** (`steamlit.py`)
+   - Upload data and get real-time predictions
+   - Easy interface to test the system interactively
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
 git clone https://github.com/yourusername/smart-energy-theft-detection.git
 cd smart-energy-theft-detection
 
-# Install dependencies
+### 2. Set Up a Virtual Environment (Recommended)
+
+python -m venv venv
+source venv/bin/activate      # On Windows: venv\Scripts\activate
+
+### 3. Install Requirements
+
 pip install -r requirements.txt
-```
 
-## Usage
+### 4. Run Streamlit App
 
-### Basic Usage
+streamlit run steamlit.py
 
-```python
-from smart_energy_theft_detection import SmartEnergyTheftDetection
+---
 
-# Initialize the system (default: Isolation Forest)
-system = SmartEnergyTheftDetection(use_autoencoder=False)
+## 📊 Sample Output (Streamlit UI)
 
-# Load and process data
-df = system.load_data('smart_meter_data.csv')
-X, y = system.preprocess_data(df)  # y is optional if labels exist
+* Upload smart meter data (CSV)
+* System displays prediction (Normal / Theft)
+* Confidence score for each sample
+* Visual insights (if included in the Streamlit UI)
 
-# Split data for training and testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+---
 
-# Train the model
-system.train_model(X_train, y_train)
+## 📌 Dependencies
 
-# Detect anomalies
-anomaly_scores, anomalies, threshold = system.detect_anomalies(X_test)
+Main packages used:
 
-# Evaluate and visualize
-if y_test is not None:
-    metrics = system.evaluate_model(anomaly_scores, y_test)
-system.visualize_anomalies(test_df, anomaly_scores, anomalies)
-```
+* `pandas`, `numpy`
+* `scikit-learn`
+* `matplotlib`, `seaborn`
+* `streamlit`
+* `joblib`
 
-### Command Line Usage
+---
 
-```bash
-# Run with default settings (Isolation Forest)
-python run_detection_system.py --data smart_meter_data.csv
+## 📈 Model Used
 
-# Run with Autoencoder model
-python run_detection_system.py --data smart_meter_data.csv --model autoencoder
+* **Random Forest Classifier**
 
-# Generate visualizations
-python run_detection_system.py --data smart_meter_data.csv --visualize
+  * Handles high-dimensional data
+  * Robust to outliers
+  * Provides feature importance
 
-# Launch interactive dashboard
-python run_detection_system.py --data smart_meter_data.csv --dashboard
+---
 
-# Run analysis toolkit
-python energy_theft_analysis.py --data smart_meter_data.csv --analysis full
-```
+## 📎 Future Improvements
 
-## File Structure
+* Add deep learning-based anomaly detection
+* Integrate real-time data ingestion
+* Store flagged users in a database
+* Add admin dashboard with alerts
 
-- `smart_energy_theft_detection.py`: Main implementation of the detection system.
-- `run_detection_system.py`: Command-line interface for running the system.
-- `energy_theft_analysis.py`: Toolkit for analyzing energy theft patterns.
-- `smart_energy_theft_notebook.ipynb`: Jupyter notebook with examples and visualizations.
-- `requirements.txt`: Required Python packages.
+---
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+---
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📄 License
 
-## Acknowledgments
+This project is open-source and available under the [MIT License](LICENSE).
 
-- Architecture based on current best practices in anomaly detection.
-- Utilizes publicly available smart meter datasets for development and evaluation.
+---
+
+## 👨‍💻 Author
+
+Devang Sonavane
+Feel free to connect!
